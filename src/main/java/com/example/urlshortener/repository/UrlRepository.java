@@ -9,10 +9,12 @@ public class UrlRepository {
     @Autowired
     StringRedisTemplate redisTemplate;
 
+    // stores the (id, Url) pair in redis
     public void setID(String id, String originalUrl){
         redisTemplate.opsForValue().set(id, originalUrl);
     }
 
+    // fetches the original long url from redis using the ID
     public String fetchUrl(String id){
         return redisTemplate.opsForValue().get(id);
     }

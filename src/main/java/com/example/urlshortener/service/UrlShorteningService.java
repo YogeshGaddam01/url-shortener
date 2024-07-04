@@ -21,6 +21,7 @@ public class UrlShorteningService{
     public String getShortenedId(String originalUrl){
         UrlValidator urlValidator = new UrlValidator(new String[] {"http", "https"});
         if(urlValidator.isValid(originalUrl)){
+            // Hashes the URL provided to store in redis
             String id = Hashing.murmur3_32().hashString(originalUrl, StandardCharsets.UTF_8).toString();
             log.debug("URL id generated: {}",id);
             repository.setID(id, originalUrl);
