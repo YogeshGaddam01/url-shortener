@@ -3,11 +3,11 @@ package com.example.urlshortener.dto;
 import lombok.Data;
 
 @Data
-public class Response {
+public class ResponseObject {
     private String statusCode;
     private String message;
 
-    public Response(String statusCode, String message) {
+    public ResponseObject(String statusCode, String message) {
         this.statusCode = statusCode;
         this.message = message;
     }
