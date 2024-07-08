@@ -1,4 +1,4 @@
-package com.example.urlshortener.model;
+package com.example.urlshortener.dto;
 
 import lombok.Data;
 
