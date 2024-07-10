@@ -1,6 +1,7 @@
 package com.example.urlshortener.service;
 
 import com.example.urlshortener.dto.ResponseObject;
+import com.example.urlshortener.exception.InvalidRequestException;
 import com.example.urlshortener.model.UrlMapping;
 import com.example.urlshortener.dto.UrlObject;
 import com.example.urlshortener.repository.UrlRepository;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UrlShorteningService{
-
 
     private final UrlNormalizer urlNormalizer;
     private final UrlRepository urlRepository;
@@ -50,13 +50,9 @@ public class UrlShorteningService{
     }
 
     public ResponseObject validateUrl(UrlObject urlObject){
-        if(urlObject == null) {
-            log.error("Url object is null");
-            return new ResponseObject("400","Url Object cannot be null");
-        }
-        if(urlObject.getUrl() == null || urlObject.getUrl().isEmpty()) {
-            log.error("Url is empty");
-            return new ResponseObject("400","Url cannot be empty");
+        if(urlObject == null || urlObject.getUrl() == null || urlObject.getUrl().isEmpty()) {
+            log.error("Url object is null / empty");
+            throw new InvalidRequestException("400", "Url Object cannot be null or empty");
         }
 
         if(!urlObject.getUrl().startsWith("http://") && !urlObject.getUrl().startsWith("https://")){
@@ -66,7 +62,7 @@ public class UrlShorteningService{
         UrlValidator urlValidator = new UrlValidator();
         if(!urlValidator.isValid(urlObject.getUrl())){
             log.error("Invalid Url");
-            return new ResponseObject("400","Invalid Url");
+            throw new InvalidRequestException("400", "Invalid Url");
         }
         return null;
     }
