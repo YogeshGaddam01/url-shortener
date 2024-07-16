@@ -25,18 +25,18 @@ public class UrlController {
 
     // Fetches the original long URL stored in redis using the ID and redirects to it.
     @GetMapping("{id}")
-    public ResponseEntity<?> redirectView(@PathVariable String id){
+    public ResponseEntity<ResponseObject> redirectView(@PathVariable String id){
         String url = urlShorteningService.getLongUrl(id);
         if(url == null){
-            return ResponseEntity.badRequest().body(new ResponseObject("400", "Invalid Id provided"));
+            return ResponseEntity.badRequest().body(new ResponseObject("400", "Failed to fetch Url: Invalid Id provided"));
         }
         log.debug("Retrieved Url: {}",url);
-        return ResponseEntity.ok().body(new ResponseObject("200", url));
+        return ResponseEntity.ok().body(new ResponseObject("200", "Url Fetched Successfully", url));
     }
 
     //Generates a Unique ID for the given URL and return the shortened URL
     @PostMapping
-    public ResponseEntity<?> shortenUrl(@RequestBody UrlObject urlObject){
+    public ResponseEntity<ResponseObject> shortenUrl(@RequestBody UrlObject urlObject){
 
         ResponseObject responseObject = urlShorteningService.validateUrl(urlObject);
         if(responseObject != null){
@@ -49,7 +49,7 @@ public class UrlController {
         fullUrl = fullUrl + id;
         log.debug("Generated Url: {}",fullUrl);
 
-        return ResponseEntity.ok().body(new ResponseObject("200", fullUrl));
+        return ResponseEntity.ok().body(new ResponseObject("200", "Url Fetched Successfully", fullUrl));
     }
 }
 

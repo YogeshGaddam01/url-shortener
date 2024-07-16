@@ -1,20 +1,15 @@
 package com.example.urlshortener.exception;
 
-import lombok.Getter;
+import com.example.urlshortener.dto.ResponseObject;
+import lombok.Data;
 
+@Data
 public class InvalidRequestException extends RuntimeException{
 
-    @Getter
-    private final String statusCode;
-    private final String message;
+    private ResponseObject errorResponse;
 
-    public InvalidRequestException(String statusCode, String message) {
-        this.statusCode = statusCode;
-        this.message = message;
+    public InvalidRequestException(ResponseObject errorResponse) {
+        this.errorResponse = errorResponse;
     }
 
-    @Override
-    public String getMessage() {
-        return message;
-    }
 }

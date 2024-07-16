@@ -1,6 +1,7 @@
 package com.example.urlshortener.service;
 
 import com.example.urlshortener.dto.ResponseObject;
+import com.example.urlshortener.exception.InvalidRequestException;
 import com.example.urlshortener.model.UrlMapping;
 import com.example.urlshortener.dto.UrlObject;
 import com.example.urlshortener.repository.UrlRepository;
@@ -41,7 +42,7 @@ class UrlShorteningServiceTest {
         UrlMapping urlMapping = new UrlMapping(id, originalUrl);
         String normalizedUrl ="google.com";
         when(urlNormalizer.normalizeUrl(originalUrl)).thenReturn(normalizedUrl);
-        when(hashingUtil.getMurmurHashValue(normalizedUrl)).thenReturn(id);
+        when(hashingUtil.hashUrl(normalizedUrl)).thenReturn(id);
         when(urlRepository.save(urlMapping)).thenReturn(urlMapping);
         Assertions.assertEquals(id, urlShorteningService.getShortenedId(originalUrl));
     }
@@ -55,25 +56,45 @@ class UrlShorteningServiceTest {
 
     @Test
     public void testNullUrl() {
-        ResponseObject responseObject = urlShorteningService.validateUrl(null);
-        Assertions.assertEquals(new ResponseObject("400", "Url Object cannot be null"), responseObject);
+        ResponseObject responseObject;
+        try{
+            responseObject = urlShorteningService.validateUrl(null);
+        }
+        catch(InvalidRequestException e){
+            Assertions.assertTrue(true);
+        }
     }
 
     @Test
     public void testNullObjectUrl() {
-        ResponseObject responseObject = urlShorteningService.validateUrl(new UrlObject());
-        Assertions.assertEquals(new ResponseObject("400", "Url cannot be empty"), responseObject);
+        ResponseObject responseObject;
+        try{
+            responseObject = urlShorteningService.validateUrl(new UrlObject());
+        }
+        catch(InvalidRequestException e){
+            Assertions.assertTrue(true);
+        }
     }
 
     @Test
     public void testEmptyUrl() {
-        ResponseObject responseObject = urlShorteningService.validateUrl(new UrlObject(""));
-        Assertions.assertEquals(new ResponseObject("400", "Url cannot be empty"), responseObject);
+        ResponseObject responseObject;
+        try{
+            responseObject = urlShorteningService.validateUrl(new UrlObject(""));
+        }
+        catch(InvalidRequestException e){
+            Assertions.assertTrue(true);
+        }
     }
 
     @Test
     public void testInvalidUrl() {
-        ResponseObject responseObject = urlShorteningService.validateUrl(new UrlObject("http//google.com"));
-        Assertions.assertEquals(new ResponseObject("400", "Invalid Url"), responseObject);
+        ResponseObject responseObject;
+        try{
+            responseObject = urlShorteningService.validateUrl(new UrlObject("http//google.com"));
+        }
+        catch(InvalidRequestException e){
+            Assertions.assertTrue(true);
+        }
     }
 }

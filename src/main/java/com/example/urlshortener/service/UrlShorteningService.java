@@ -32,7 +32,7 @@ public class UrlShorteningService{
     public String getShortenedId(String url){
         // Hashes the URL provided to store in redis
         String normalizedUrl = urlNormalizer.normalizeUrl(url);
-        String id = hashingUtil.getMurmurHashValue(normalizedUrl);
+        String id = hashingUtil.hashUrl(normalizedUrl);
         log.debug("URL id generated: {}",id);
 
         urlRepository.save(new UrlMapping(id, url));
@@ -52,17 +52,18 @@ public class UrlShorteningService{
     public ResponseObject validateUrl(UrlObject urlObject){
         if(urlObject == null || urlObject.getUrl() == null || urlObject.getUrl().isEmpty()) {
             log.error("Url object is null / empty");
-            throw new InvalidRequestException("400", "Url Object cannot be null or empty");
+            throw new InvalidRequestException(new ResponseObject("400", "Url Object cannot be null or empty"));
         }
 
         if(!urlObject.getUrl().startsWith("http://") && !urlObject.getUrl().startsWith("https://")){
             urlObject.setUrl("http://"+urlObject.getUrl());
+            log.debug("Url modified: {}", urlObject.getUrl());
         }
 
         UrlValidator urlValidator = new UrlValidator();
         if(!urlValidator.isValid(urlObject.getUrl())){
             log.error("Invalid Url");
-            throw new InvalidRequestException("400", "Invalid Url");
+            throw new InvalidRequestException(new ResponseObject("400", "Invalid Url"));
         }
         return null;
     }

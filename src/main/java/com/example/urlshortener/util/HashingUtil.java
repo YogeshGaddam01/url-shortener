@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class HashingUtil {
 
-    public String getMurmurHashValue(String url){
+    public String hashUrl(String url){
         return Hashing.murmur3_32().hashString(url, StandardCharsets.UTF_8).toString();
     }
 }

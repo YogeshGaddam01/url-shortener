@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -33,10 +34,12 @@ public class UrlControllerTest {
         when(urlShorteningService.validateUrl(urlObject)).thenReturn(null);
 
         mockMvc.perform(post("/api/v1")
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"url\":\"https://www.google.com\"}"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"statusCode\":\"200\",\"message\":\"http://localhost/api/v1/"+id+"\"}"));
+                .andExpect(jsonPath("$.statusCode").value("200"))
+                .andExpect(jsonPath("$.message").value("Url Fetched Successfully"))
+                .andExpect(jsonPath("$.url").value("http://localhost/api/v1/"+id));
 
         verify(urlShorteningService, times(1)).getShortenedId(originalUrl);
     }
@@ -45,9 +48,12 @@ public class UrlControllerTest {
     public void testGetUrlController() throws Exception {
         when(urlShorteningService.getLongUrl(id)).thenReturn(originalUrl);
 
-        mockMvc.perform(get("/api/v1/" + id))
+        mockMvc.perform(get("/api/v1/" + id).content("{}")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"statusCode\":\"200\",\"message\":\""+originalUrl+"\"}"));
+                .andExpect(jsonPath("$.statusCode").value("200"))
+                .andExpect(jsonPath("$.message").value("Url Fetched Successfully"))
+                .andExpect(jsonPath("$.url").value(originalUrl));
 
         verify(urlShorteningService, times(1)).getLongUrl(id);
     }
